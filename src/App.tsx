@@ -1,26 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import WeatherComponent from './components/WeatherComponent';
+import FuelComponent from './components/FuelComponent';
+import CurrencyComponent from './components/CurrencyComponent';
+import NavbarMenu from './components/NavbarMenu';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <NavbarMenu />
+      <Container className="pt-5 pb-5">
+        <Switch>
+          <Route component={WeatherComponent} path="/" exact />
+          <Route component={CurrencyComponent} path="/currency" />
+          <Route component={FuelComponent} path="/fuel" />
+        </Switch>
+      </Container>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
