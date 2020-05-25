@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import WeatherComponent from './components/WeatherComponent';
 import FuelComponent from './components/FuelComponent';
 import CurrencyComponent from './components/CurrencyComponent';

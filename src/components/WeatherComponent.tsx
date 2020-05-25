@@ -9,7 +9,7 @@ const WeatherComponent: React.FC = () => {
   useEffect(() => {
     axios
       .get(
-        'http://api.openweathermap.org/data/2.5/forecast?q=Mykolaiv,UA-48,UK&appid=7d5164d60100fac02928c705e0d31cb6'
+        'http://api.openweathermap.org/data/2.5/forecast?q=Mykolaiv,UA-48,UK&units=metric&lang=ru&appid=7d5164d60100fac02928c705e0d31cb6'
       )
       .then((response) => {
         console.log(response);
@@ -25,7 +25,7 @@ const WeatherComponent: React.FC = () => {
   return (
     <Card>
       <Card.Body>
-        {/* <WeatherList weather_items={list} /> */}
+        <WeatherList weather_items={list} />
       </Card.Body>
     </Card>
   );
