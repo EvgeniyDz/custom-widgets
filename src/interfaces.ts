@@ -20,7 +20,16 @@ export interface IWeatherItem {
     }
   ];
 }
-
 export interface IWeatherListProps {
   weather_items: IWeatherItem[];
+}
+
+export interface ICurrencyItem {
+  base_ccy: string;
+  ccy: string;
+  buy: string;
+  sale: string;
+}
+export interface ICurrencyTableProps {
+  table_items: ICurrencyItem[];
 }
