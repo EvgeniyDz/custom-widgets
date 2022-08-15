@@ -1,46 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ICurrencyItem } from '../interfaces';
-import { ButtonGroup, Button } from 'react-bootstrap';
+import { ICurrencyItem, ICurrencyDateItem } from '../types/interfaces';
+import { ButtonGroup, Button, Spinner } from 'react-bootstrap';
 import CurrencyTable from './tables/CurrencyTable';
 import DatePicker from 'react-datepicker';
 import { setDefaultLocale, registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import ru from 'date-fns/locale/ru';
+import uk from 'date-fns/locale/uk';
 import moment from 'moment';
 
-const CurrencyComponent: React.FC = () => {
-  const [courses, setCourse] = useState<ICurrencyItem[]>([]);
-  const [type, setType] = useState<string>('today');
+enum tabType {
+  today = 'today',
+  date = 'for_date',
+}
 
-  registerLocale('ru', ru);
-  setDefaultLocale('ru');
+const CurrencyComponent: React.FC = () => {
+  const [courses, setCourse] = useState<ICurrencyDateItem[]>([]);
+  const [coursesCurrent, setCourseCurrent] = useState<ICurrencyItem[]>([]);
+  const [type, setType] = useState<tabType>(tabType.today);
+  const [date, setDate] = useState<string>('');
+  const [isLoading, setLoading] = useState<boolean>(false);
+
+  registerLocale('uk', uk);
+  setDefaultLocale('uk');
+
+  const getData = async (isCurrent?: boolean, date?: string) => {
+    try {
+      setLoading(true);
+      const result = await axios.get(
+        !date
+          ? `https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5`
+          : `https://api.privatbank.ua/p24api/exchange_rates?json&date=${date}`
+      );
+      setLoading(false);
+      if (isCurrent) {
+        setCourseCurrent(
+          result.data.filter((item: ICurrencyItem) => item.base_ccy === 'UAH')
+        );
+      } else {
+        setCourse(result.data.exchangeRate);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    getData();
+    getData(true);
   }, []);
 
-  const getData = () => {
-    axios
-      .get(`https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5`)
-      .then((response) => {
-        console.log(response);
-        setCourse(
-          response.data.filter((item: ICurrencyItem) => item.base_ccy === 'UAH')
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleChange = (e: Date | null) => {
+    setDate(moment(e).format('DD.MM.yyyy'));
+    getData(false, moment(e).format('DD.MM.yyyy'));
   };
 
-  const handleChange = () => {
-    console.log('huy');
-  };
-
-  const changeType = (type: string) => {
+  const changeType = (type: tabType) => {
     setType(type);
-    type !== 'today' ? setCourse([]) : getData();
   };
 
   return (
@@ -48,32 +63,37 @@ const CurrencyComponent: React.FC = () => {
       <ButtonGroup className="mb-3" aria-label="Basic example">
         <Button
           variant="secondary"
-          onClick={() => changeType('today')}
-          className={type === 'today' ? 'active' : ''}
+          onClick={() => changeType(tabType.today)}
+          className={type === tabType.today ? 'active' : ''}
         >
-          Сегодня
+          Сьогодні
         </Button>
         <Button
           variant="secondary"
-          onClick={() => changeType('for_date')}
-          className={type === 'for_date' ? 'active' : ''}
+          onClick={() => changeType(tabType.date)}
+          className={type === tabType.date ? 'active' : ''}
         >
           За дату
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => changeType('mean')}
-          className={type === 'mean' ? 'active' : ''}
-        >
-          Средний за месяц
         </Button>
       </ButtonGroup>
       {type !== 'today' && (
         <div className="mt-3">
-          <DatePicker onChange={handleChange} />
+          <DatePicker
+            onChange={(e) => handleChange(e)}
+            value={date?.toString()}
+            maxDate={moment().toDate()}
+          />
         </div>
       )}
-      <CurrencyTable table_items={courses} />
+      {isLoading ? (
+        <Spinner animation="border" role="status" />
+      ) : (
+        <CurrencyTable
+          table_items={coursesCurrent}
+          table_date_items={courses}
+          isDate={type === tabType.date}
+        />
+      )}
     </>
   );
 };

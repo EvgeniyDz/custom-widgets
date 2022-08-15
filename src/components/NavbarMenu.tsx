@@ -28,14 +28,14 @@ const NavbarMenu: React.FC = () => {
           >
             Курс валют
           </Nav.Link>
-          <Nav.Link
+          {/* <Nav.Link
             as={NavLink}
             to="/fuel"
             className="pt-0 pb-0"
             activeClassName="active"
           >
             Цены на топливо
-          </Nav.Link>
+          </Nav.Link> */}
         </Nav>
       </Navbar.Collapse>
     </Navbar>
