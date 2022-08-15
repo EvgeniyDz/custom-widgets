@@ -23,6 +23,12 @@ export interface IWeatherItem {
 export interface IWeatherListProps {
   weather_items: IWeatherItem[];
 }
+export interface IWeatherResponse {
+  list: IWeatherItem[];
+  city: {
+    name: string;
+  };
+}
 
 export interface ICurrencyItem {
   base_ccy: string;
@@ -30,6 +36,13 @@ export interface ICurrencyItem {
   buy: string;
   sale: string;
 }
+export interface ICurrencyDateItem {
+  purchaseRate: string;
+  saleRate: string;
+  currency: string;
+}
 export interface ICurrencyTableProps {
   table_items: ICurrencyItem[];
+  table_date_items: ICurrencyDateItem[];
+  isDate: boolean;
 }
