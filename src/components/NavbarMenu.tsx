@@ -28,6 +28,7 @@ const NavbarMenu: React.FC = () => {
           >
             Курс валют
           </Nav.Link>
+          {/* TODO: Add fuel cost logic */}
           {/* <Nav.Link
             as={NavLink}
             to="/fuel"

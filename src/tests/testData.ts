@@ -33,3 +33,51 @@ export const weatherResponse = {
         }
     }
 };
+
+export const currencyDefaultResponse = { 
+    data: [
+        {
+            ccy: "USD",
+            base_ccy: "UAH",
+            buy: "38.80000",
+            sale: "39.10000"
+        },
+        {
+            ccy: "EUR",
+            base_ccy: "UAH",
+            buy: "39.80000",
+            sale: "40.80000"
+        },
+        {
+            ccy: "BTC",
+            base_ccy: "USD",
+            buy: "22554.4686",
+            sale: "24928.6232"
+        }
+    ]
+};
+
+export const currencyDateResponse = { 
+    data: { 
+        exchangeRate: [
+            {
+                baseCurrency: "UAH",
+                currency: "AZN",
+                purchaseRateNB: 21.568,
+                saleRateNB: 21.568
+            }, 
+            {
+                baseCurrency: "UAH",
+                currency: "BYN",
+                purchaseRateNB: 13.2919,
+                saleRateNB: 13.2919,
+            },
+            {
+                baseCurrency: "UAH",
+                currency: "CAD",
+                purchaseRateNB: 28.4647,
+                saleRateNB: 28.4647
+            }
+        ]
+    }
+};

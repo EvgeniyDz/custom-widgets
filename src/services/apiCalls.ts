@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IWeatherResponse } from '../types/interfaces';
+import { IWeatherResponse, ICurrencyItem, ICurrencyDateResponse } from '../types/interfaces';
 
 export const getWeatherList = async (params: string | undefined): Promise<IWeatherResponse | null> => {
     try {
@@ -8,6 +8,26 @@ export const getWeatherList = async (params: string | undefined): Promise<IWeath
         );
         return result.data;
       } catch {
+        return null;
+      }
+}
+
+export const getCurrencyDefaultList = async (): Promise<ICurrencyItem[] | null> => {
+    try {
+        const result = await axios.get<ICurrencyItem[]>('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5');
+        return result.data;
+      } catch (error) {
+        console.log(error);
+        return null;
+      }
+}
+
+export const getCurrencyDateList = async (date: string): Promise<ICurrencyDateResponse | null> => {
+    try {
+        const result = await axios.get<ICurrencyDateResponse>(`https://api.privatbank.ua/p24api/exchange_rates?json&date=${date}`);
+        return result.data;
+      } catch (error) {
+        console.log(error);
         return null;
       }
 }

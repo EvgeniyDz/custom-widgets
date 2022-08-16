@@ -1,5 +1,6 @@
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
+
 import { IWeatherListProps } from '../../types/interfaces';
 
 const WeatherList: React.FC<IWeatherListProps> = ({ weather_items }) => {

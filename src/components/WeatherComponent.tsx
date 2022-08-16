@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Card, ButtonGroup, Button, Form, Spinner } from 'react-bootstrap';
+
 import WeatherList from './lists/WeatherList';
 import { IWeatherItem } from '../types/interfaces';
 import { getWeatherList } from '../services/apiCalls';

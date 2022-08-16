@@ -1,5 +1,6 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
+
 import { ICurrencyTableProps, ICurrencyDateItem } from '../../types/interfaces';
 
 const CurrencyTable: React.FC<ICurrencyTableProps> = ({
