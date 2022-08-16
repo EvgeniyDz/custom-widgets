@@ -35,15 +35,13 @@ const CurrencyTable: React.FC<ICurrencyTableProps> = ({
               );
             })
           : renderDateItems(table_date_items).map((item: ICurrencyDateItem) => {
-              if (item.currency) {
-                return (
-                  <tr key={item.currency}>
-                    <td>{item.currency}</td>
-                    <td>{item.purchaseRate || '-'}</td>
-                    <td>{item.saleRate || '-'}</td>
-                  </tr>
-                );
-              }
+              return (
+                <tr key={item.currency}>
+                  <td>{item.currency}</td>
+                  <td>{item.purchaseRate || '-'}</td>
+                  <td>{item.saleRate || '-'}</td>
+                </tr>
+              );
             })}
       </tbody>
     </Table>
