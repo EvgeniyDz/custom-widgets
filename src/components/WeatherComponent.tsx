@@ -1,32 +1,41 @@
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
-import { Card, ButtonGroup, Button, Form } from 'react-bootstrap';
+import { Card, ButtonGroup, Button, Form, Spinner } from 'react-bootstrap';
+
 import WeatherList from './lists/WeatherList';
-import { IWeatherItem, IWeatherResponse } from '../types/interfaces';
+import { IWeatherItem } from '../types/interfaces';
+import { getWeatherList } from '../services/apiCalls';
 
 const WeatherComponent: React.FC = () => {
   const [list, setList] = useState<IWeatherItem[]>([]);
+  const [listDefault, setListDefault] = useState<IWeatherItem[]>([]);
   const [tab, setTab] = useState<number>(1);
   const [hasError, toggleError] = useState<boolean>(false);
   const [city, setCity] = useState<string>('');
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const refSearch = useRef<HTMLInputElement>(null);
 
+  const resetData = (): void => {
+    setLoading(true);
+    toggleError(false);
+    setListDefault([]);
+    setList([]);
+    setCity('');
+  };
   const getInfo = async (params: string | undefined): Promise<void> => {
-    try {
-      const result = await axios.get<IWeatherResponse>(
-        `http://api.openweathermap.org/data/2.5/forecast?q=${params}&units=metric&lang=ua&appid=7d5164d60100fac02928c705e0d31cb6`
-      );
-      const response_list: IWeatherItem[] = result.data.list;
-      setList(response_list);
-      toggleError(false);
-      if (params !== 'Mykolaiv,UA-48,UK') {
-        setCity(result.data.city.name);
-      } else {
-        setCity('');
-      }
-    } catch {
+    resetData();
+    const data = await getWeatherList(params);
+    setLoading(false);
+    if (!data) {
       toggleError(true);
+      return;
+    }
+    if (params !== 'Mykolaiv,UA-48,UK') {
+      setList(data.list);
+      setCity(data.city.name);
+    } else {
+      setCity('');
+      setListDefault(data.list);
     }
   };
 
@@ -36,13 +45,12 @@ const WeatherComponent: React.FC = () => {
 
   const changeTab = (tab: number) => {
     setTab(tab);
-    tab === 2 ? setList([]) : getInfo('Mykolaiv,UA-48,UK');
+    if (tab === 2) setList([]);
   };
 
   const handlerSearch = (event: React.FormEvent) => {
     event.preventDefault();
     getInfo(refSearch.current?.value);
-    console.log(refSearch.current?.value);
   };
 
   return (
@@ -83,7 +91,12 @@ const WeatherComponent: React.FC = () => {
         {!hasError && city !== '' && (
           <h2 className="text-center mb-0 mt-2">{city}</h2>
         )}
-        <WeatherList weather_items={list} />
+              {isLoading ? (
+        <Spinner data-testid="weather-loader" animation="border" role="status" style={{ display: 'block' }} className='mt-2' />
+      ) : (
+        <WeatherList weather_items={tab === 2 ? list : listDefault} />
+      )}
+        
         {hasError && <p className="text-center mb-0 mt-2">Місто не знайдено</p>}
       </Card.Body>
     </Card>

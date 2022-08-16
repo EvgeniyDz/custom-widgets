@@ -41,6 +41,9 @@ export interface ICurrencyDateItem {
   saleRate: string;
   currency: string;
 }
+export interface ICurrencyDateResponse {
+  exchangeRate: ICurrencyDateItem[];
+}
 export interface ICurrencyTableProps {
   table_items: ICurrencyItem[];
   table_date_items: ICurrencyDateItem[];

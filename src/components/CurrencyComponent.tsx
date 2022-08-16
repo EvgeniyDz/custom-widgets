@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ICurrencyItem, ICurrencyDateItem } from '../types/interfaces';
 import { ButtonGroup, Button, Spinner } from 'react-bootstrap';
-import CurrencyTable from './tables/CurrencyTable';
 import DatePicker from 'react-datepicker';
 import { setDefaultLocale, registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import uk from 'date-fns/locale/uk';
 import moment from 'moment';
+
+import { ICurrencyItem, ICurrencyDateItem } from '../types/interfaces';
+import CurrencyTable from './tables/CurrencyTable';
+import { getCurrencyDefaultList, getCurrencyDateList } from '../services/apiCalls';
 
 enum tabType {
   today = 'today',
@@ -24,34 +25,27 @@ const CurrencyComponent: React.FC = () => {
   registerLocale('uk', uk);
   setDefaultLocale('uk');
 
-  const getData = async (isCurrent?: boolean, date?: string) => {
-    try {
-      setLoading(true);
-      const result = await axios.get(
-        !date
-          ? `https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5`
-          : `https://api.privatbank.ua/p24api/exchange_rates?json&date=${date}`
-      );
-      setLoading(false);
-      if (isCurrent) {
+  const getData = async (date?: string) => {
+    setLoading(true);
+    if (date) {
+      const data = await getCurrencyDateList(date);
+      setCourse(data?.exchangeRate || []);
+    } else {
+      const data = await getCurrencyDefaultList();
         setCourseCurrent(
-          result.data.filter((item: ICurrencyItem) => item.base_ccy === 'UAH')
+          data ? data.filter((item: ICurrencyItem) => item.base_ccy === 'UAH') : []
         );
-      } else {
-        setCourse(result.data.exchangeRate);
-      }
-    } catch (error) {
-      console.log(error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    getData(true);
+    getData();
   }, []);
 
   const handleChange = (e: Date | null) => {
     setDate(moment(e).format('DD.MM.yyyy'));
-    getData(false, moment(e).format('DD.MM.yyyy'));
+    getData(moment(e).format('DD.MM.yyyy'));
   };
 
   const changeType = (type: tabType) => {
