@@ -5,7 +5,7 @@ import { IWeatherListProps } from '../../types/interfaces';
 
 const WeatherList: React.FC<IWeatherListProps> = ({ weather_items }) => {
   return (
-    <ListGroup variant="flush">
+    <ListGroup variant="flush" data-testid="weather-list">
       {weather_items.map((item) => {
         let windDirection = '';
         if (

@@ -3,9 +3,10 @@ import { getWeatherList, getCurrencyDefaultList, getCurrencyDateList } from '../
 import { weatherResponse, currencyDefaultResponse, currencyDateResponse } from './testData';
 
 jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 describe('Get weather data', () => {
     it('get successfully data from an API', async () => {  
-      axios.get.mockImplementationOnce(() => Promise.resolve(weatherResponse));
+      mockedAxios.get.mockImplementationOnce(() => Promise.resolve(weatherResponse));
   
       await expect(getWeatherList('test')).resolves.toEqual(weatherResponse.data);
 
@@ -17,7 +18,7 @@ describe('Get weather data', () => {
   
     it('get error data from an API', async () => {
   
-      axios.get.mockImplementationOnce(() =>
+      mockedAxios.get.mockImplementationOnce(() =>
         Promise.reject(),
       );
   
@@ -28,7 +29,7 @@ describe('Get weather data', () => {
 describe('Get currency data', () => {
     // Default currency
     it('get successfully data for default value', async () => {  
-      axios.get.mockImplementationOnce(() => Promise.resolve(currencyDefaultResponse));
+      mockedAxios.get.mockImplementationOnce(() => Promise.resolve(currencyDefaultResponse));
   
       await expect(getCurrencyDefaultList()).resolves.toEqual(currencyDefaultResponse.data);
 
@@ -36,7 +37,7 @@ describe('Get currency data', () => {
   
     it('get error data for default value', async () => {
   
-      axios.get.mockImplementationOnce(() =>
+      mockedAxios.get.mockImplementationOnce(() =>
         Promise.reject(),
       );
   
@@ -45,7 +46,7 @@ describe('Get currency data', () => {
 
     // Date currency
     it('get successfully data for date value', async () => {  
-        axios.get.mockImplementationOnce(() => Promise.resolve(currencyDateResponse));
+        mockedAxios.get.mockImplementationOnce(() => Promise.resolve(currencyDateResponse));
     
         await expect(getCurrencyDateList('04.08.2022')).resolves.toEqual(currencyDateResponse.data);
 
@@ -57,7 +58,7 @@ describe('Get currency data', () => {
     
       it('get error data for date value', async () => {
     
-        axios.get.mockImplementationOnce(() =>
+        mockedAxios.get.mockImplementationOnce(() =>
           Promise.reject(),
         );
     

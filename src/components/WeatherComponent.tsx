@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Card, ButtonGroup, Button, Form, Spinner } from 'react-bootstrap';
 
 import WeatherList from './lists/WeatherList';
-import { IWeatherItem } from '../types/interfaces';
+import { IWeatherItem, IWeatherResponse } from '../types/interfaces';
 import { getWeatherList } from '../services/apiCalls';
 
 const WeatherComponent: React.FC = () => {
@@ -22,35 +22,50 @@ const WeatherComponent: React.FC = () => {
     setList([]);
     setCity('');
   };
-  const getInfo = async (params: string | undefined): Promise<void> => {
-    resetData();
+  const getInfo = async (params: string | undefined): Promise<IWeatherResponse | null> => {
     const data = await getWeatherList(params);
+    return data;
+  };
+
+  useEffect(() => {
+    let isCanceled = false;
+    const getData = async () => {
+      if (!isCanceled) resetData();
+      const data = await getInfo('Mykolaiv,UA-48,UK');
+      if (!isCanceled) {
+        setLoading(false);
+        if (!data) {
+          toggleError(true);
+          return;
+        }
+        setCity('');
+        setListDefault(data.list);
+      }
+    }
+    getData();
+    return (() => {
+      isCanceled = true;
+    });
+  }, []);
+
+  const changeTab = (tab: number) => {
+    setTab(tab);
+    setCity('');
+    if (tab === 2) setList([]);
+  };
+
+  const handlerSearch = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    toggleError(false);
+    const data = await getInfo(refSearch.current?.value);
     setLoading(false);
     if (!data) {
       toggleError(true);
       return;
     }
-    if (params !== 'Mykolaiv,UA-48,UK') {
-      setList(data.list);
-      setCity(data.city.name);
-    } else {
-      setCity('');
-      setListDefault(data.list);
-    }
-  };
-
-  useEffect(() => {
-    getInfo('Mykolaiv,UA-48,UK');
-  }, []);
-
-  const changeTab = (tab: number) => {
-    setTab(tab);
-    if (tab === 2) setList([]);
-  };
-
-  const handlerSearch = (event: React.FormEvent) => {
-    event.preventDefault();
-    getInfo(refSearch.current?.value);
+    setList(data.list);
+    setCity(data.city.name);
   };
 
   return (
@@ -68,6 +83,7 @@ const WeatherComponent: React.FC = () => {
             onClick={() => changeTab(2)}
             variant="secondary"
             className={tab === 2 ? 'active' : ''}
+            data-testid="form-btn"
           >
             Не Миколаїв
           </Button>
@@ -82,22 +98,23 @@ const WeatherComponent: React.FC = () => {
               type="text"
               placeholder="Введіть місто"
               ref={refSearch}
+              data-testid="weather-input"
             />
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" data-testid="search-btn">
               Знайти
             </Button>
           </Form>
         )}
         {!hasError && city !== '' && (
-          <h2 className="text-center mb-0 mt-2">{city}</h2>
+          <h2 className="text-center mb-0 mt-2" data-testid="city-title">{city}</h2>
         )}
-              {isLoading ? (
-        <Spinner data-testid="weather-loader" animation="border" role="status" style={{ display: 'block' }} className='mt-2' />
-      ) : (
-        <WeatherList weather_items={tab === 2 ? list : listDefault} />
-      )}
+        {isLoading ? (
+          <Spinner data-testid="weather-loader" animation="border" role="status" style={{ display: 'block' }} className='mt-2' />
+        ) : (
+          !hasError && <WeatherList weather_items={tab === 2 ? list : listDefault} />
+        )}
         
-        {hasError && <p className="text-center mb-0 mt-2">Місто не знайдено</p>}
+        {hasError && <p className="text-center mb-0 mt-2" data-testid="error-message">Місто не знайдено</p>}
       </Card.Body>
     </Card>
   );
